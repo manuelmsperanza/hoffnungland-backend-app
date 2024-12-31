@@ -4,8 +4,8 @@
 	cd hoffnungland-backend-app
 	npm init -y
 	npm install express body-parser cors pg crypto uuid nodemailer
-	npm install --save-dev typescript @types/node ts-node
-	
+	npm install --save-dev typescript @types/node tsx
+
 	npx tsc --init
 	mkdir src
 	
@@ -33,19 +33,23 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "node dist/server.js",
-		"dev": "ts-node src/server.ts"
+		"dev": "node --import=tsx src/server.ts"
 	}
 
-dev doesn't work. use npx tsx src/server.ts
+execute shortcut using: npm run {build|start|dev}
+
+dev doesn't work. use npx tsx src/server.ts to run without compile first.
 
 # build
 
 	npx tsc
 
+npx is a tool that allows you to run Node.js packages without installing them globally
+
 # run
 
 	npx tsx src/server.ts
-	node dist/index.js
+	node dist/server.js
 
 # run on server
 
