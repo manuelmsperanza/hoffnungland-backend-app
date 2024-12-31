@@ -1,10 +1,15 @@
-import http from 'http';
+import express, { Request, Response } from 'express';
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Hello, TypeScript with Node.js!');
+// Create an Express application
+const app = express();
+const port: number = 3000;
+
+// Define a route
+app.get('/', (req: Request, res: Response): void => {
+  res.send('Hello World!');
 });
 
-server.listen(3000, () => {
-    console.log('Server running at http://localhost:3000/');
+// Start the server
+app.listen(port, (): void => {
+  console.log(`Example app listening on port ${port}`);
 });
