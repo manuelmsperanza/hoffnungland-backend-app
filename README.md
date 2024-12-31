@@ -3,8 +3,9 @@
 	mkdir hoffnungland-backend-app
 	cd hoffnungland-backend-app
 	npm init -y
-	npm install express body-parser cors pg crypto uuid nodemailer
-	npm install --save-dev typescript @types/node @types/express tsx
+	npm install express body-parser cors pg crypto uuid nodemailer zod
+	npm install dotenv --save
+	npm install --save-dev typescript @types/node @types/express @types/pg @types/nodemailer tsx
 	npx tsc --init
 	mkdir src
 	

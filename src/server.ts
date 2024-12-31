@@ -1,7 +1,7 @@
-import express, { Request, Response } from 'express';
+import express, { Application, Request, Response } from 'express';
 
 // Create an Express application
-const app = express();
+const app : Application = express();
 const port: number = 3000;
 
 // Define a route
