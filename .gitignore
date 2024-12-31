@@ -1,0 +1,162 @@
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# Node.js dependencies
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn.lock
+
+# Logs and debugging
+logs/
+*.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment Files
+.env
+.env.*.local
+
+# Compiled output
+dist/
+out-tsc/
+build/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.bak
+*.tmp
+
+# Testing
+coverage/
+*.lcov
+.nyc_output/
+junit.xml
+
+# Angular Cache
+.angular/cache/
+.angular/build/
+
+# Compiled TypeScript files
+*.tsbuildinfo
+*.tsbuildinfo.backup
+
+# Miscellaneous
+.sass-cache/
+.cache/
+*.seed
+*.pid
+*.gz
+*.tgz
+*.zip
+
+# Temporary files
+tmp/
+temp/
+
+# Firebase
+.firebase/
+.firebaserc
+
+# Optional npm package folders
+jspm_packages/
+
+# Typescript generated files
+*.d.ts
+
+# Protractor end-to-end tests
+e2e/*.js
+e2e/*.map
+e2e/*.spec.ts
+
+# Webpack files
+webpack-stats.json
+
+# Optional runtime data
+pids/
+*.pid.lock
+
+# IDE-specific files
+*.iml
+*.ipr
+*.iws
+
+# Bower
+.bower_components
+
+# Compiled CSS and JS
+*.css.map
+*.js.map
+
+# Heroku
+.procfile
+
+# Gitignore for deployment artifacts
+firebase-debug.log
+.firestore/
+.serverless/
+
+# Angular CLI specific files
+.angular/
+
+# Dependency vulnerabilities
+.npmrc
+.npmignore
+
+# Docker files
+docker-compose.yml
+Dockerfile
+docker-compose.override.yml
+
+# Local environment overrides
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
