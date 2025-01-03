@@ -9,6 +9,7 @@ const envSchema = z.object({
   mail_secure: z.string().default('false'),
   mail_username: z.string().default('root'),
   mail_passwd: z.string().default(''),
+  mail_default_receiver: z.string(),
   mail_debug: z.string().default('false'),
   mail_logger: z.string().default('false'),
 });

@@ -1,12 +1,12 @@
 import {Pool} from 'pg';
-import { env } from './db_config'; 
+import { env as dbEnv } from './db_config'; 
 
 const pool : Pool = new Pool({
-    user: env.db_username,
-    host: env.db_host,
-    database: env.db_name,
-    password: env.db_passwd,
-    port: (env.db_port ? Number(env.db_port) : 5432),
+    user: dbEnv.db_username,
+    host: dbEnv.db_host,
+    database: dbEnv.db_name,
+    password: dbEnv.db_passwd,
+    port: (dbEnv.db_port ? Number(dbEnv.db_port) : 5432),
     ssl: {
       // For many hosted providers, simply "require: true" is enough
       rejectUnauthorized: false

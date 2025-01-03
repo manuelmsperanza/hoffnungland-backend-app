@@ -1,27 +1,26 @@
 import nodemailer from 'nodemailer';
-
-import { env } from './mail_config'; 
+import { env as mailEnv } from './mail_config'; 
 
 const transporter = nodemailer.createTransport({
-    host: env.mail_host,
-    port: (env.mail_port ? Number(env.mail_port) : 587),
-    secure: Boolean(env.mail_secure),
+    host: mailEnv.mail_host,
+    port: (mailEnv.mail_port ? Number(mailEnv.mail_port) : 587),
+    secure: Boolean(mailEnv.mail_secure),
     auth: {
       type: 'login',
-      user: env.mail_username,
-      pass: env.mail_passwd
+      user: mailEnv.mail_username,
+      pass: mailEnv.mail_passwd
     },
     tls: {
       // do not fail on invalid certs
       rejectUnauthorized: false,
     },
-    debug: Boolean(env.mail_debug),   // Enable debug output
-    logger: Boolean(env.mail_logger)   // Enable logging
+    debug: Boolean(mailEnv.mail_debug),   // Enable debug output
+    logger: Boolean(mailEnv.mail_logger)   // Enable logging
   });
   
   const mailOptions = {
-    from: env.mail_username,
-    to: 'a.b@c.com',
+    from: mailEnv.mail_username,
+    to: mailEnv.mail_default_receiver,
     subject: 'Your Resume Request',
     text: 'Thank you for your interest. Here is my resume.'
   };
