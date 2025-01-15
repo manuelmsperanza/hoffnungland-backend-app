@@ -5,6 +5,7 @@ import { env as dbEnv } from './db_config';
 
 import nodemailer from 'nodemailer';
 import { env as mailEnv } from './mail_config'; 
+import { promises } from 'dns';
 // Create an Express application
 const app: Application = express();
 const port: number = 3000;
@@ -45,7 +46,7 @@ const transporter = nodemailer.createTransport({
   });
 
 // Middleware to log session info
-app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {
+app.use('/api/submit-email', (req: Request, res: Response, next: NextFunction) => {
 
   const sessionInfo = {
     ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, // Client IP
@@ -63,7 +64,7 @@ app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {
 });
 
 // Define a route
-app.get('/verify/:email_hash', async (req: Request, res: Response): Promise<void> => {
+app.get('/api/verify/:email_hash', async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await pool.query(
       'UPDATE hlschema.emails set verified = true where email_hash = $1 and verified = false',
@@ -98,7 +99,7 @@ app.get('/verify/:email_hash', async (req: Request, res: Response): Promise<void
 });
 
 // Define the request body type for /submit-email route
-interface SubmitEmailRequest extends Request {
+interface SubmitEmailRequest extends Request<any, any, { email: string; message: string }> {
   body: {
     email: string;
     message : string
@@ -112,7 +113,7 @@ interface SubmitEmailRequest extends Request {
   };
 }
 
-app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) => {
+app.post('/api/submit-email', async (req: SubmitEmailRequest, res: Response) : Promise<void> => {
 
   const { email, message } = req.body;
 
@@ -127,7 +128,8 @@ app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) => {
     );
     
     if (result.rowCount === 0) {
-      return res.status(400).json({ error: 'Email already exists' });
+      res.status(400).json({ error: 'Email already exists' });
+      return;
     }
 
     const mailOptions = {
