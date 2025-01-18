@@ -46,7 +46,7 @@ const transporter = nodemailer.createTransport({
   });
 
 // Middleware to log session info
-app.use('/api/submit-email', (req: Request, res: Response, next: NextFunction) => {
+app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {
 
   const sessionInfo = {
     ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, // Client IP
@@ -64,7 +64,7 @@ app.use('/api/submit-email', (req: Request, res: Response, next: NextFunction) =
 });
 
 // Define a route
-app.get('/api/verify/:email_hash', async (req: Request, res: Response): Promise<void> => {
+app.get('/verify/:email_hash', async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await pool.query(
       'UPDATE hlschema.emails set verified = true where email_hash = $1 and verified = false',
@@ -113,7 +113,7 @@ interface SubmitEmailRequest extends Request<any, any, { email: string; message:
   };
 }
 
-app.post('/api/submit-email', async (req: SubmitEmailRequest, res: Response) : Promise<void> => {
+app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) : Promise<void> => {
 
   const { email, message } = req.body;
 
