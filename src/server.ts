@@ -60,6 +60,7 @@ app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {
 
   // Store session info in request object for further use
   (req as any).sessionInfo = sessionInfo;
+  console.log('Payload:', req);
   next();
 });
 
