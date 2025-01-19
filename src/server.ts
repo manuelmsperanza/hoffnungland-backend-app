@@ -12,7 +12,7 @@ const port: number = 3000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-
+console.log(dbEnv);
 // Connect to DB
 const pool = new Pool({
   user: dbEnv.db_username,
