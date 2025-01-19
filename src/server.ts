@@ -60,7 +60,7 @@ app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {
 
   // Store session info in request object for further use
   (req as any).sessionInfo = sessionInfo;
-  console.log('Payload:', req);
+  //console.log('Payload:', req);
   next();
 });
 
@@ -115,7 +115,7 @@ interface SubmitEmailRequest extends Request<any, any, { email: string; message:
 }
 
 app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) : Promise<void> => {
-
+  console.log('submit-email - called');
   const { email, message } = req.body;
 
   // Anonymize email with SHA-256 hash
