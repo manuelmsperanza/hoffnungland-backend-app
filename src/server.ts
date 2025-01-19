@@ -117,17 +117,21 @@ interface SubmitEmailRequest extends Request<any, any, { email: string; message:
 app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) : Promise<void> => {
   console.log('submit-email - called');
   const { email, message } = req.body;
+  console.log('email:', email);
+  console.log('message:', message);
 
   // Anonymize email with SHA-256 hash
   const hash = crypto.createHash('sha256').update(email).digest('hex');
+  console.log('hash:', hash);
   const domain = email.split('@')[1]; // Extract domain for analysis
   const sessionInfo = req.sessionInfo;
+  console.log('sessionInfo:', sessionInfo);
   try {
     const result = await pool.query(
       'INSERT INTO hlschema.emails (ip_address, email_hash, email_domain, message) VALUES ($1, $2, $3, $4) ON CONFLICT (email_hash) DO NOTHING',
       [sessionInfo?.ip, hash, domain, message]
     );
-    
+    console.log('result:', result);
     if (result.rowCount === 0) {
       res.status(400).json({ error: 'Email already exists' });
       return;
