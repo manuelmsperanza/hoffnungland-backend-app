@@ -57,3 +57,6 @@ npx is a tool that allows you to run Node.js packages without installing them gl
 	pm2 start server.js
 	pm2 save
 	pm2 startup
+
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K441XSO)
