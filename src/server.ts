@@ -137,7 +137,7 @@ app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) : Promi
       from: mailEnv.mail_username,
       to: email,
       subject: 'Hoffnungland Resume Request',
-      text: 'Thank you for your interest. Please verify your email at http://hoffnungland.com/verify/' + hash + '/' + email_random
+      text: 'Thank you for your interest. Please verify your email at https://hoffnungland.com/api/verify/' + hash + '/' + email_random
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
