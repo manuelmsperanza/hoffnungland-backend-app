@@ -64,16 +64,16 @@ app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {
 });
 
 // Define a route
-app.get('/verify/:email_hash', async (req: Request, res: Response): Promise<void> => {
+app.get('/verify/:email_hash/:email_random', async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await pool.query(
-      'UPDATE hlschema.emails set verified = true where email_hash = $1 and verified = false',
-      [req.params.email_hash]
+      'UPDATE hlschema.emails set verified = true where email_hash = $1 and email_random = $2 and verified = false',
+      [req.params.email_hash, req.params.email_random]
     );
     
     
     if (result.rowCount === 0) {
-      res.status(400).json({ error: 'Email already verified' });
+      res.json({ success: false, error: 'Email already verified' });
       return;
     }
 
@@ -119,16 +119,17 @@ app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) : Promi
 
   // Anonymize email with SHA-256 hash
   const hash = crypto.createHash('sha256').update(email).digest('hex');
+  const email_random = crypto.randomBytes(16).toString('hex');
   const domain = email.split('@')[1]; // Extract domain for analysis
   const sessionInfo = req.sessionInfo;
   try {
     const result = await pool.query(
-      'INSERT INTO hlschema.emails (ip_address, email_hash, email_domain, message) VALUES ($1, $2, $3, $4) ON CONFLICT (email_hash) DO NOTHING',
-      [sessionInfo?.ip, hash, domain, message]
+      'INSERT INTO hlschema.emails (ip_address, email_hash, email_domain, email_random, message) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (email_hash) DO NOTHING',
+      [sessionInfo?.ip, hash, domain, email_random, message]
     );
     
     if (result.rowCount === 0) {
-      res.status(400).json({ error: 'Email already exists' });
+      res.json({ success: false, error: 'Email already exists' });
       return;
     }
 
@@ -136,12 +137,12 @@ app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) : Promi
       from: mailEnv.mail_username,
       to: email,
       subject: 'Hoffnungland Resume Request',
-      text: 'Thank you for your interest. Please verify your email at http://hoffnungland.com/verify/' + hash
+      text: 'Thank you for your interest. Please verify your email at http://hoffnungland.com/verify/' + hash + '/' + email_random
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error){
-          console.log(error);
+        res.json({ success: false, error: error});
       }else {
           console.log('Email sent: ' + info.response);
       }
