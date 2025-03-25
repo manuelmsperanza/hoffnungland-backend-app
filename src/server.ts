@@ -3,6 +3,9 @@ import crypto from 'crypto';
 import { Pool } from 'pg';
 import { env as dbEnv } from './db_config';
 
+import { env as auth0Env } from './auth0_config'; 
+import { auth } from 'express-oauth2-jwt-bearer'
+
 import nodemailer from 'nodemailer';
 import { env as mailEnv } from './mail_config'; 
 import { promises } from 'dns';
@@ -12,6 +15,31 @@ const port: number = 3000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log('language: ', req.headers['x-user-language']);
+  next();
+});
+
+const checkJwt = auth({
+  audience: auth0Env.auth0_audience, // the identifier of your API
+  issuerBaseURL: auth0Env.auth0_domain, // the URL of your Auth0 tenant
+});
+
+
+app.get('/api/public', function(req, res) {
+  res.json({
+    message: 'Hello from a public endpoint! You don\'t need to be authenticated to see this.'
+  });
+});
+
+// This route needs authentication
+app.get('/api/private', checkJwt, function(req, res) {
+  console.log( req.auth);
+  res.json({
+    message: 'Hello from a private endpoint! You need to be authenticated to see this.'
+  });
+});
 
 // Connect to DB
 const pool = new Pool({

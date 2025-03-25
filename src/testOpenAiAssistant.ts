@@ -1,10 +1,10 @@
 import OpenAI from 'openai';
-import { env as opeAiEnv } from './openAi_config'; 
+import { env as openAiEnv } from './openAi_config'; 
 
 const openai = new OpenAI({
-  apiKey: opeAiEnv.openAi_key,
-  organization : opeAiEnv.openAi_Organization,
-  project : opeAiEnv.openAi_DefaultProject
+  apiKey: openAiEnv.openAi_key,
+  organization : openAiEnv.openAi_Organization,
+  project : openAiEnv.openAi_DefaultProject
 });
 
 async function enquiry(thread: any, userMessage: string) {
@@ -20,7 +20,7 @@ async function enquiry(thread: any, userMessage: string) {
       let run = await openai.beta.threads.runs.createAndPoll(
           thread.id,
           { 
-            assistant_id: opeAiEnv.openAi_ResumeAssistant
+            assistant_id: openAiEnv.openAi_ResumeAssistant
           }
         );
   

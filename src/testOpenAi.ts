@@ -1,11 +1,11 @@
 
 import OpenAI from 'openai';
-import { env as opeAiEnv } from './openAi_config'; 
+import { env as openAiEnv } from './openAi_config'; 
 
 const openai = new OpenAI({
-  apiKey: opeAiEnv.openAi_key,
-  organization : opeAiEnv.openAi_Organization,
-  project : opeAiEnv.openAi_DefaultProject
+  apiKey: openAiEnv.openAi_key,
+  organization : openAiEnv.openAi_Organization,
+  project : openAiEnv.openAi_DefaultProject
 });
 
 const completion = openai.chat.completions.create({
