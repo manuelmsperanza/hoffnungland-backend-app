@@ -23,7 +23,7 @@ async function enquiry(thread: any, userMessage: string) {
             assistant_id: openAiEnv.openAi_ResumeAssistant
           }
         );
-        console.log(run.thread_id + ' ' + run.usage.total_tokens);
+        console.log(run.thread_id + ' ' + run.usage?.total_tokens);
         if (run.status === 'completed') {
           const messages = await openai.beta.threads.messages.list(
             run.thread_id,
