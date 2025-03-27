@@ -71,8 +71,6 @@ app.use(express.json());
   next();
 });*/
 
-
-
 app.get('/api/retrieveThread', checkJwt, async (req: Request, res: Response): Promise<void> => {
   //console.log( req.auth);
   const resultQuery = await pool.query(

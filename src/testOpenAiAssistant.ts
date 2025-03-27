@@ -48,7 +48,7 @@ async function main() {
   console.log(thread);
   await enquiry(thread, "it");
   await enquiry(thread, "Hello");
-  await enquiry(thread, "Pleaese talk me about you");
+  await enquiry(thread, "Please talk me about you");
   await enquiry(thread, "what does he think about DevOps?");
   await enquiry(thread, "what's his favorite color?");
 

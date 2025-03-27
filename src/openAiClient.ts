@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 
 export interface OpenAiMessage {
     role: string;
-    content: string;
+    content: string[];
     tokens : number;
 }
 
@@ -24,11 +24,11 @@ export class OpenAiClient {
         return messages;
     }
 
-    async enquiry(threadId : string, userMessage: string, assistantId : string, deleteUserMessage : boolean = false) : Promise<OpenAiMessage> {
+    async enquiry(threadId : string, userMessage: string[], assistantId : string, deleteUserMessage : boolean = false) : Promise<OpenAiMessage> {
 
         let returnMessage : OpenAiMessage = {
             role: "",
-            content: "",
+            content: [],
             tokens : 0
         };
 
@@ -36,7 +36,7 @@ export class OpenAiClient {
             threadId,
             {
               role: "user",
-              content: userMessage
+              content: userMessage[0]
             }
         );
     
@@ -54,11 +54,16 @@ export class OpenAiClient {
             {run_id : run.id}
             );
             for (const message of messages.data.reverse()) {
-                //console.log(message)
+                console.log(message)
                 if ('text' in message.content[0]) {
                     console.log(`${message.role} > ${message.content[0].text.value}`);
                     returnMessage.role = message.role;
-                    returnMessage.content = message.content[0].text.value;
+
+                    message.content[0].text.value.split('\n').forEach((paragraph : string) => {
+                        if(paragraph.length > 0){
+                            returnMessage.content.push(paragraph);    
+                        }
+                    });
                 } else {
                     console.log(`${message.role} > [Non-text content]`);
                 }
@@ -77,11 +82,20 @@ export class OpenAiClient {
         const messagesList = await this.openai.beta.threads.messages.list(threadId);
         for (const message of messagesList.data.reverse()) {
             if ('text' in message.content[0]) {
-                messages.push({
+
+                let returnMessage : OpenAiMessage = {
                     role: message.role,
-                    content: message.content[0].text.value,
+                    content: [],
                     tokens : 0
+                };
+
+                message.content[0].text.value.split('\n').forEach((paragraph : string) => {
+                    if(paragraph.length > 0){
+                        returnMessage.content.push(paragraph);    
+                    }
                 });
+
+                messages.push(returnMessage);
             }
         }
         return messages;
