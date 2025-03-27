@@ -47,7 +47,7 @@ export class OpenAiClient {
             assistant_id: assistantId
             }
         );
-        console.log(run.thread_id + ' ' + run.usage?.total_tokens);
+        //console.log(run.thread_id + ' ' + run.usage?.total_tokens);
         returnMessage.tokens = run.usage?.total_tokens || 0;
         if (run.status === 'completed') {
             const messages = await this.openai.beta.threads.messages.list(
@@ -55,9 +55,9 @@ export class OpenAiClient {
             {run_id : run.id}
             );
             for (const message of messages.data.reverse()) {
-                console.log(message)
+                //console.log(message)
                 if ('text' in message.content[0]) {
-                    console.log(`${message.role} > ${message.content[0].text.value}`);
+                    //console.log(`${message.role} > ${message.content[0].text.value}`);
                     returnMessage.role = message.role;
 
                     message.content[0].text.value.split('\n').forEach((paragraph : string) => {

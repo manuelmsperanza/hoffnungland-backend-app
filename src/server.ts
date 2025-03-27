@@ -112,8 +112,9 @@ app.post('/enquiry', checkJwt, async (req: Request, res: Response): Promise<void
   let openAiMessage : OpenAiMessage;
   //console.log(req.body);
   const { userMessage } = req.body;
+  let userMessages : string[] = [userMessage];
   let openAiThreadId = resultQuery.rows[0].openaithreadid;
-  openAiMessage = await openAiClient.enquiry(openAiThreadId, userMessage, openAiEnv.openAi_ResumeAssistant);
+  openAiMessage = await openAiClient.enquiry(openAiThreadId, userMessages, openAiEnv.openAi_ResumeAssistant);
   res.json(openAiMessage);
 });
 
@@ -128,7 +129,7 @@ app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {
     timestamp: new Date().toISOString() // Session start time
   };
 
-  console.log('Session Information:', sessionInfo);
+  //console.log('Session Information:', sessionInfo);
 
   // Store session info in request object for further use
   (req as any).sessionInfo = sessionInfo;
@@ -228,5 +229,5 @@ app.post('/submit-email', async (req: SubmitEmailRequest, res: Response) : Promi
 
 // Start the server
 app.listen(port, (): void => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`App listening on port ${port}`);
 });
