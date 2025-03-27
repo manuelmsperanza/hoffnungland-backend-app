@@ -110,7 +110,7 @@ app.post('/enquiry', checkJwt, async (req: Request, res: Response): Promise<void
   let openAiClient : OpenAiClient = new OpenAiClient(openai);
   //console.log(resultQuery);
   let openAiMessage : OpenAiMessage;
-  console.log(req.body);
+  //console.log(req.body);
   const { userMessage } = req.body;
   let openAiThreadId = resultQuery.rows[0].openaithreadid;
   openAiMessage = await openAiClient.enquiry(openAiThreadId, userMessage, openAiEnv.openAi_ResumeAssistant);
