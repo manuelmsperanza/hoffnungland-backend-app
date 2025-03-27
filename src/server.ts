@@ -3,46 +3,24 @@ import crypto from 'crypto';
 import { Pool } from 'pg';
 import { env as dbEnv } from './db_config';
 
-import { env as auth0Env } from './auth0_config'; 
+import OpenAI from 'openai';
+import { OpenAiClient, OpenAiMessage } from './openAiClient';
+import { env as openAiEnv } from './openAi_config'; 
+
 import { auth } from 'express-oauth2-jwt-bearer'
+import { env as auth0Env } from './auth0_config'; 
 
 import nodemailer from 'nodemailer';
 import { env as mailEnv } from './mail_config'; 
 import { promises } from 'dns';
+import e from 'express';
+
 // Create an Express application
 const app: Application = express();
 const port: number = 3000;
 
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-app.use((req, res, next) => {
-  console.log('language: ', req.headers['x-user-language']);
-  next();
-});
-
-const checkJwt = auth({
-  audience: auth0Env.auth0_audience, // the identifier of your API
-  issuerBaseURL: auth0Env.auth0_domain, // the URL of your Auth0 tenant
-});
-
-
-app.get('/api/public', function(req, res) {
-  res.json({
-    message: 'Hello from a public endpoint! You don\'t need to be authenticated to see this.'
-  });
-});
-
-// This route needs authentication
-app.get('/api/private', checkJwt, function(req, res) {
-  console.log( req.auth);
-  res.json({
-    message: 'Hello from a private endpoint! You need to be authenticated to see this.'
-  });
-});
-
 // Connect to DB
-const pool = new Pool({
+const pool : Pool = new Pool({
   user: dbEnv.db_username,
   host: dbEnv.db_host,
   database: dbEnv.db_name,
@@ -54,24 +32,92 @@ const pool = new Pool({
   }
 });
 
-
 // Connect to mail server
 const transporter = nodemailer.createTransport({
-    host: mailEnv.mail_host,
-    port: (mailEnv.mail_port ? Number(mailEnv.mail_port) : 587),
-    secure: Boolean(mailEnv.mail_secure),
-    auth: {
-      type: 'login',
-      user: mailEnv.mail_username,
-      pass: mailEnv.mail_passwd
-    },
-    tls: {
-      // do not fail on invalid certs
-      rejectUnauthorized: false,
-    },
-    debug: Boolean(mailEnv.mail_debug),   // Enable debug output
-    logger: Boolean(mailEnv.mail_logger)   // Enable logging
-  });
+  host: mailEnv.mail_host,
+  port: (mailEnv.mail_port ? Number(mailEnv.mail_port) : 587),
+  secure: Boolean(mailEnv.mail_secure),
+  auth: {
+    type: 'login',
+    user: mailEnv.mail_username,
+    pass: mailEnv.mail_passwd
+  },
+  tls: {
+    // do not fail on invalid certs
+    rejectUnauthorized: false,
+  },
+  debug: Boolean(mailEnv.mail_debug),   // Enable debug output
+  logger: Boolean(mailEnv.mail_logger)   // Enable logging
+});
+
+// Connect to Auth0 authenticator
+const checkJwt = auth({
+  audience: auth0Env.auth0_audience, // the identifier of your API
+  issuerBaseURL: auth0Env.auth0_domain, // the URL of your Auth0 tenant
+});
+
+// Connect to OpenAI
+const openai: OpenAI = new OpenAI({
+  apiKey: openAiEnv.openAi_key,
+  organization : openAiEnv.openAi_Organization,
+  project : openAiEnv.openAi_DefaultProject
+});
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+/*app.use((req, res, next) => {
+  console.log('language: ', req.headers['x-user-language']);
+  next();
+});*/
+
+
+
+app.get('/api/retrieveThread', checkJwt, async (req: Request, res: Response): Promise<void> => {
+  //console.log( req.auth);
+  const resultQuery = await pool.query(
+    'SELECT openaithreadid FROM hlschema.emails where oauthuserid = $1',  [req.auth?.payload.sub]
+  );
+
+  let openAiClient : OpenAiClient = new OpenAiClient(openai);
+  //console.log(resultQuery);
+  let openAiMessages : OpenAiMessage[];
+  if (resultQuery.rowCount === 0) {
+
+    const thread = await openai.beta.threads.create();
+
+    const resultInsert = await pool.query(
+      'INSERT INTO hlschema.emails (oauthuserid, openaithreadid) VALUES ($1, $2)',
+      [req.auth?.payload.sub, thread.id]
+    );
+    
+    const userLanguage = typeof req.headers['x-user-language'] === 'string' ? req.headers['x-user-language'] : 'en';
+    openAiMessages = await openAiClient.initialiseThread(thread.id, userLanguage, openAiEnv.openAi_ResumeAssistant);
+    
+  } else {
+    let openAiThreadId = resultQuery.rows[0].openaithreadid;
+    openAiMessages = await openAiClient.retrieveThread(openAiThreadId);
+  }
+
+  res.json(openAiMessages);
+
+});
+
+app.post('/api/enquiry', checkJwt, async (req: Request, res: Response): Promise<void> => {
+  //console.log( req.auth);
+  const resultQuery = await pool.query(
+    'SELECT openaithreadid FROM hlschema.emails where oauthuserid = $1',  [req.auth?.payload.sub]
+  );
+
+  let openAiClient : OpenAiClient = new OpenAiClient(openai);
+  //console.log(resultQuery);
+  let openAiMessage : OpenAiMessage;
+  console.log(req.body);
+  const { userMessage } = req.body;
+  let openAiThreadId = resultQuery.rows[0].openaithreadid;
+  openAiMessage = await openAiClient.enquiry(openAiThreadId, userMessage, openAiEnv.openAi_ResumeAssistant);
+  res.json(openAiMessage);
+});
 
 // Middleware to log session info
 app.use('/submit-email', (req: Request, res: Response, next: NextFunction) => {

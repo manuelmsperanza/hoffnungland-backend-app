@@ -23,10 +23,11 @@ async function enquiry(thread: any, userMessage: string) {
             assistant_id: openAiEnv.openAi_ResumeAssistant
           }
         );
-  
+        console.log(run.thread_id + ' ' + run.usage.total_tokens);
         if (run.status === 'completed') {
           const messages = await openai.beta.threads.messages.list(
-            run.thread_id
+            run.thread_id,
+            {run_id : run.id}
           );
           for (const message of messages.data.reverse()) {
               //console.log(message)
@@ -45,7 +46,7 @@ async function enquiry(thread: any, userMessage: string) {
 async function main() {
   const thread = await openai.beta.threads.create();
   console.log(thread);
-
+  await enquiry(thread, "it");
   await enquiry(thread, "Hello");
   await enquiry(thread, "Pleaese talk me about you");
   await enquiry(thread, "what does he think about DevOps?");
