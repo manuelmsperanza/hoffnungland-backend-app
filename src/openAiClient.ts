@@ -18,7 +18,8 @@ export class OpenAiClient {
 
     async initialiseThread(threadId : string, language: string, assistantId : string) : Promise<OpenAiMessage[]> {
         let messages : OpenAiMessage[] = [];
-        let message = await this.enquiry(threadId, language, assistantId, true);
+        let languages : string[] = [language];
+        let message = await this.enquiry(threadId, languages, assistantId, true);
 
         messages.push(message);
         return messages;
