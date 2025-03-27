@@ -71,7 +71,7 @@ app.use(express.json());
   next();
 });*/
 
-app.get('/api/retrieveThread', checkJwt, async (req: Request, res: Response): Promise<void> => {
+app.get('/retrieveThread', checkJwt, async (req: Request, res: Response): Promise<void> => {
   //console.log( req.auth);
   const resultQuery = await pool.query(
     'SELECT openaithreadid FROM hlschema.emails where oauthuserid = $1',  [req.auth?.payload.sub]
@@ -101,7 +101,7 @@ app.get('/api/retrieveThread', checkJwt, async (req: Request, res: Response): Pr
 
 });
 
-app.post('/api/enquiry', checkJwt, async (req: Request, res: Response): Promise<void> => {
+app.post('/enquiry', checkJwt, async (req: Request, res: Response): Promise<void> => {
   //console.log( req.auth);
   const resultQuery = await pool.query(
     'SELECT openaithreadid FROM hlschema.emails where oauthuserid = $1',  [req.auth?.payload.sub]
